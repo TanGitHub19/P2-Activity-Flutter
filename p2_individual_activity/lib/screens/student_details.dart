@@ -94,8 +94,8 @@ class _StudentDetailsState extends State<StudentDetails> {
           child: Container(
             margin: const EdgeInsets.only(top: 30),
             width: 350,
-            height: 310,
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+            height: 280,
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(15)),
