@@ -78,51 +78,49 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Container(
         margin: const EdgeInsets.only(top: 20),
-        child: Expanded(
-          child: RefreshIndicator(
-            onRefresh: _refreshStudents,
-            child: FutureBuilder<List<Student>>(
-              future: futureStudent,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No Student Found'));
-                } else {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final student = snapshot.data![index];
-                      return GestureDetector(
-                        onTap: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  StudentDetails(student: student),
-                            ),
-                          );
+        child: RefreshIndicator(
+          onRefresh: _refreshStudents,
+          child: FutureBuilder<List<Student>>(
+            future: futureStudent,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No Student Found'));
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final student = snapshot.data![index];
+                    return GestureDetector(
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                StudentDetails(student: student),
+                          ),
+                        );
 
-                          if (result == true) {
-                            _refreshStudents();
-                          }
-                        },
-                        child: CustomContainer(
-                          id: student.id,
-                          firstName: student.firstName,
-                          lastName: student.lastName,
-                          course: student.course,
-                          year: student.year!,
-                          enrolled: student.enrolled,
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-            ),
+                        if (result == true) {
+                          _refreshStudents();
+                        }
+                      },
+                      child: CustomContainer(
+                        id: student.id,
+                        firstName: student.firstName,
+                        lastName: student.lastName,
+                        course: student.course,
+                        year: student.year!,
+                        enrolled: student.enrolled,
+                      ),
+                    );
+                  },
+                );
+              }
+            },
           ),
         ),
       ),

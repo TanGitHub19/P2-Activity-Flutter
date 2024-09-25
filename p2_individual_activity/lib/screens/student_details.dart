@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:p2_individual_activity/models/student_model.dart';
+import 'package:p2_individual_activity/screens/home_screen.dart';
 import 'package:p2_individual_activity/screens/update_student_form_screen.dart';
+import 'package:p2_individual_activity/services/api_service.dart';
 
 class StudentDetails extends StatefulWidget {
   final Student student;
@@ -13,12 +15,59 @@ class StudentDetails extends StatefulWidget {
 
 class _StudentDetailsState extends State<StudentDetails> {
   Student? student;
+  final ApiService _apiService = ApiService();
+
+
+
 
   @override
   void initState() {
     super.initState();
     student = widget.student;
   }
+
+  Future<void> _deleteStudent() async {
+    try {
+      final shouldDelete = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content:
+                const Text('Are you sure you want to delete this student?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldDelete == true) {
+        await _apiService.deleteStudent(widget.student.id);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +101,8 @@ class _StudentDetailsState extends State<StudentDetails> {
           ),
           actions: [
             Container(
-              margin: const EdgeInsets.only(right: 30, top: 10),
-              child: ElevatedButton.icon(
+              margin: const EdgeInsets.only(),
+              child: IconButton(
                 onPressed: () async {
                   final updatedStudent = await Navigator.push(
                     context,
@@ -70,7 +119,6 @@ class _StudentDetailsState extends State<StudentDetails> {
                   }
                 },
                 icon: const Icon(Icons.update),
-                label: const Text('Update'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   foregroundColor: Colors.white,
@@ -81,6 +129,21 @@ class _StudentDetailsState extends State<StudentDetails> {
                 ),
               ),
             ),
+             Container(
+            margin: const EdgeInsets.only(right: 30),
+            child: IconButton(
+              onPressed: _deleteStudent,
+              icon: const Icon(Icons.delete),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[700],
+                foregroundColor: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
           ],
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -94,7 +157,7 @@ class _StudentDetailsState extends State<StudentDetails> {
           child: Container(
             margin: const EdgeInsets.only(top: 30),
             width: 350,
-            height: 280,
+            height: 320,
             padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
             decoration: BoxDecoration(
               color: Colors.white,

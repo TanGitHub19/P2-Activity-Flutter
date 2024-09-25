@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:p2_individual_activity/models/student_model.dart';
-import 'package:p2_individual_activity/screens/home_screen.dart';
 import 'package:p2_individual_activity/services/api_service.dart';
 
 class UpdateStudentFormScreen extends StatefulWidget {
@@ -69,48 +68,7 @@ class _UpdateStudentFormScreenState extends State<UpdateStudentFormScreen> {
     Navigator.pop(context, student);
   }
 
-  Future<void> _deleteStudent() async {
-    try {
-      final shouldDelete = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Confirm Deletion'),
-            content:
-                const Text('Are you sure you want to delete this student?'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                },
-                child: const Text('Delete'),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (shouldDelete == true) {
-        await _apiService.deleteStudent(widget.student.id);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,24 +93,6 @@ class _UpdateStudentFormScreenState extends State<UpdateStudentFormScreen> {
             decorationThickness: 1.5,
           ),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 30, top: 10),
-            child: ElevatedButton.icon(
-              onPressed: _deleteStudent,
-              icon: const Icon(Icons.delete),
-              label: const Text('Delete'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[700],
-                foregroundColor: Colors.white,
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Container(
